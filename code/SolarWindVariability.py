@@ -29,7 +29,7 @@ downloadnow = False #flag to determine whether HelioMAS data needs to be obtaine
 
 datadir = 'D:\\Dropbox\\python_repos\\SolarWindVariability\data\\'
 heliomasdir = datadir + 'HelioMAS\\'
-
+#heliomasdir = os.environ['DBOX'] + 'Data\\HelioMAS\\'
 
 # <codecell> functions
 
@@ -959,7 +959,7 @@ print('<|dBr|> eclip: ' + str(np.nanmean(abs(Br_next[:,mask_b,id_r_v] - Br[:,mas
 HelioMASdir = os.environ['DBOX'] + 'Data\\HelioMAS\\'
 ssn_df = LoadSSN()
 
-CRstart = 2230#1625
+CRstart = 1625
 CRstop = 2232
 
 
@@ -1204,7 +1204,7 @@ for ilat in range(0,Nlats):
     r_dB_lat[ilat,1] = r_s[0]
     
     
-# <codecell> plot the HleioMAS results
+# <codecell> plot the HelioMAS results
 
 #plt.rcParams.update({'font.size': 14})
 from cycler import cycler
@@ -1460,6 +1460,7 @@ ax.text(0.03, 0.05, r'(d)', transform = ax.transAxes)
 # <codecell> lat plots
 #==============================
 
+
 lat_centres = 90 - lats[0:len(lats)-1]*180/np.pi -2.5
 
 
@@ -1473,7 +1474,7 @@ plt.plot(df['datetime'],df['SAI'], 'r', label = 'SAI')
 ax.get_xaxis().set_ticklabels([])
 plt.ylabel('SSN')
 plt.legend(fontsize = 14, bbox_to_anchor=(0.3, .85), framealpha = 1)
-ax.text(0.05,.9,'(a)', fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
+ax.text(0.02,.9,'(a)', fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
 ax.set_xlim((datetime(1975,1,1), datetime(2020,1,1)))
 ax.set_ylim((0,1.5))
 
@@ -1481,13 +1482,28 @@ ax = fig.add_subplot(gs[1, 0:3])
 im_v = ax.pcolor(df['datetime'], lat_centres, dV_lat.T, norm=plt.Normalize(0,150))
 ax.set_yticks([-90, -45, 0, 45, 90])
 ax.get_xaxis().set_ticklabels([])
-ax.text(0.05,1.05,'(b)' + r'$<|\Delta V|>_{CR}$', fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
+ax.text(0.02,1.05,'(b)' + r'$<|\Delta V|>_{CR}$ [km/s]                                                           ',
+        fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
 ax.set_xlim((datetime(1975,1,1), datetime(2020,1,1)))
 ax.set_ylim((-90,90))
 ax.set_ylabel('Latitude [deg]')
+
+#sort out the bloody colourbar
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+axins = inset_axes(ax,
+                    width="100%",  # width = 50% of parent_bbox width
+                    height="10%",  # height : 5%
+                    loc='upper right',
+                    bbox_to_anchor=(0.45, 0.65, 0.5, 0.5),
+                    bbox_transform=ax.transAxes,
+                    borderpad=0,)
+
 #ax.plot([0, 360],[7.5, 7.5],'w--'); ax.plot([0, 360],[-7.5, -7.5],'w--');
-#cb = plt.colorbar(im_v); cb.ax.tick_params(labelsize=12)
+
+cb = fig.colorbar(im_v, cax = axins, orientation = 'horizontal',  pad = -0.1)
+cb.ax.tick_params(labelsize=12)
 #cb.ax.set_title(r'$<|\Delta V|>_{CR}$ [km/s]', fontsize = 14)
+
 
 ax =  fig.add_subplot(gs[2, 0:3])
 im_b = ax.pcolor(df['datetime'], lat_centres, dB_lat.T, norm=plt.Normalize(0,1.5))
@@ -1496,10 +1512,22 @@ for tick in ax.get_xticklabels():
             tick.set_rotation(90)
 ax.set_xlim((datetime(1975,1,1), datetime(2020,1,1)))
 ax.set_ylim((-90,90))
-ax.text(0.05,1.05,'(d)' + r'$<|\Delta B_R|>_{CR}$' , fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
+ax.text(0.02,1.05,'(d)' + r'$<|\Delta B_R|>_{CR}$ [nT]                                                     ' , 
+        fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
 ax.set_ylabel('Latitude [deg]')
 
+axins = inset_axes(ax,
+                    width="100%",  # width = 50% of parent_bbox width
+                    height="10%",  # height : 5%
+                    loc='upper right',
+                    bbox_to_anchor=(0.45, 0.65, 0.5, 0.5),
+                    bbox_transform=ax.transAxes,
+                    borderpad=0,)
 
+#ax.plot([0, 360],[7.5, 7.5],'w--'); ax.plot([0, 360],[-7.5, -7.5],'w--');
+
+cb = fig.colorbar(im_b, cax = axins, orientation = 'horizontal',  pad = -0.1)
+cb.ax.tick_params(labelsize=12)
 
 
 ax = fig.add_subplot(gs[1, 3])
@@ -1863,7 +1891,7 @@ plt.plot(df_CR['datetime'],df_CR['SAI'], 'r', label = 'SAI')
 ax.get_xaxis().set_ticklabels([])
 plt.ylabel('SSN')
 plt.legend(fontsize = 14, bbox_to_anchor=(0.3, .85), framealpha = 1)
-ax.text(0.05,.9,'(a)', fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
+ax.text(0.02,.9,'(a)', fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
 ax.set_xlim((datetime(1975,1,1), datetime(2020,1,1)))
 ax.set_ylim((0,1.5))
 
@@ -1871,13 +1899,27 @@ ax = fig.add_subplot(gs[1, 0:3])
 im_v = ax.pcolor(df_CR['datetime'], lat_centres, V_lat.T, norm=plt.Normalize(300,750))
 ax.set_yticks([-90, -45, 0, 45, 90])
 ax.get_xaxis().set_ticklabels([])
-ax.text(0.05,1.05,'(b)' + r'$<|V|>_{CR}$', fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
+ax.text(0.02,1.05,'(b)' + r'$<|V|>_{CR}$ [km/s]                                                      ',
+        fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
 ax.set_xlim((datetime(1975,1,1), datetime(2020,1,1)))
 ax.set_ylim((-90,90))
 ax.set_ylabel('Latitude [deg]')
 #ax.plot([0, 360],[7.5, 7.5],'w--'); ax.plot([0, 360],[-7.5, -7.5],'w--');
 #cb = plt.colorbar(im_v); cb.ax.tick_params(labelsize=12)
 #cb.ax.set_title(r'$<|\Delta V|>_{CR}$ [km/s]', fontsize = 14)
+
+axins = inset_axes(ax,
+                    width="100%",  # width = 50% of parent_bbox width
+                    height="10%",  # height : 5%
+                    loc='upper right',
+                    bbox_to_anchor=(0.45, 0.65, 0.5, 0.5),
+                    bbox_transform=ax.transAxes,
+                    borderpad=0,)
+
+#ax.plot([0, 360],[7.5, 7.5],'w--'); ax.plot([0, 360],[-7.5, -7.5],'w--');
+
+cb = fig.colorbar(im_v, cax = axins, orientation = 'horizontal',  pad = -0.1)
+cb.ax.tick_params(labelsize=12)
 
 ax =  fig.add_subplot(gs[2, 0:3])
 im_b = ax.pcolor(df_CR['datetime'], lat_centres, Vsig_lat.T, norm=plt.Normalize(0,150))
@@ -1886,10 +1928,22 @@ for tick in ax.get_xticklabels():
             tick.set_rotation(90)
 ax.set_xlim((datetime(1975,1,1), datetime(2020,1,1)))
 ax.set_ylim((-90,90))
-ax.text(0.05,1.05,'(d)' + r'$<|\sigma_V|>_{CR}$' , fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
+ax.text(0.02,1.05,'(d)' + r'$<|\sigma_V|>_{CR}$ [km/s]                                               ' ,
+        fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
 ax.set_ylabel('Latitude [deg]')
 
+axins = inset_axes(ax,
+                    width="100%",  # width = 50% of parent_bbox width
+                    height="10%",  # height : 5%
+                    loc='upper right',
+                    bbox_to_anchor=(0.45, 0.65, 0.5, 0.5),
+                    bbox_transform=ax.transAxes,
+                    borderpad=0,)
 
+#ax.plot([0, 360],[7.5, 7.5],'w--'); ax.plot([0, 360],[-7.5, -7.5],'w--');
+
+cb = fig.colorbar(im_b, cax = axins, orientation = 'horizontal',  pad = -0.1)
+cb.ax.tick_params(labelsize=12)
 
 
 ax = fig.add_subplot(gs[1, 3])
@@ -1932,7 +1986,7 @@ plt.plot(df_CR['datetime'],df_CR['SAI'], 'r', label = 'SAI')
 ax.get_xaxis().set_ticklabels([])
 plt.ylabel('SSN')
 plt.legend(fontsize = 14, bbox_to_anchor=(0.3, .85), framealpha = 1)
-ax.text(0.05,.9,'(a)', fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
+ax.text(0.02,.9,'(a)', fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
 ax.set_xlim((datetime(1975,1,1), datetime(2020,1,1)))
 ax.set_ylim((0,1.5))
 
@@ -1940,13 +1994,30 @@ ax = fig.add_subplot(gs[1, 0:3])
 im_v = ax.pcolor(df_CR['datetime'], lat_centres, B_lat.T, norm=plt.Normalize(0,3))
 ax.set_yticks([-90, -45, 0, 45, 90])
 ax.get_xaxis().set_ticklabels([])
-ax.text(0.05,1.05,'(b)' + r'$<|B_R|>_{CR}$', fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
+ax.text(0.02,1.05,'(b)' + r'$<|B_R|>_{CR}$ [nT]                                                            ',
+        fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
 ax.set_xlim((datetime(1975,1,1), datetime(2020,1,1)))
 ax.set_ylim((-90,90))
 ax.set_ylabel('Latitude [deg]')
 #ax.plot([0, 360],[7.5, 7.5],'w--'); ax.plot([0, 360],[-7.5, -7.5],'w--');
 #cb = plt.colorbar(im_v); cb.ax.tick_params(labelsize=12)
 #cb.ax.set_title(r'$<|\Delta V|>_{CR}$ [km/s]', fontsize = 14)
+
+axins = inset_axes(ax,
+                    width="100%",  # width = 50% of parent_bbox width
+                    height="10%",  # height : 5%
+                    loc='upper right',
+                    bbox_to_anchor=(0.45, 0.65, 0.5, 0.5),
+                    bbox_transform=ax.transAxes,
+                    borderpad=0,)
+
+#ax.plot([0, 360],[7.5, 7.5],'w--'); ax.plot([0, 360],[-7.5, -7.5],'w--');
+
+cb = fig.colorbar(im_v, cax = axins, orientation = 'horizontal',  pad = -0.1)
+cb.ax.tick_params(labelsize=12)
+
+
+
 
 ax =  fig.add_subplot(gs[2, 0:3])
 im_b = ax.pcolor(df_CR['datetime'], lat_centres, Bsig_lat.T, norm=plt.Normalize(0,1.2))
@@ -1955,8 +2026,22 @@ for tick in ax.get_xticklabels():
             tick.set_rotation(90)
 ax.set_xlim((datetime(1975,1,1), datetime(2020,1,1)))
 ax.set_ylim((-90,90))
-ax.text(0.05,1.05,'(d)' + r'$<|\sigma_B|>_{CR}$' , fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
+ax.text(0.02,1.05,'(d)' + r'$<|\sigma_B|>_{CR}$ [nT]                                                     ' , 
+        fontsize = 14, transform=ax.transAxes, backgroundcolor = 'w')
 ax.set_ylabel('Latitude [deg]')
+
+axins = inset_axes(ax,
+                    width="100%",  # width = 50% of parent_bbox width
+                    height="10%",  # height : 5%
+                    loc='upper right',
+                    bbox_to_anchor=(0.45, 0.65, 0.5, 0.5),
+                    bbox_transform=ax.transAxes,
+                    borderpad=0,)
+
+#ax.plot([0, 360],[7.5, 7.5],'w--'); ax.plot([0, 360],[-7.5, -7.5],'w--');
+
+cb = fig.colorbar(im_b, cax = axins, orientation = 'horizontal',  pad = -0.1)
+cb.ax.tick_params(labelsize=12)
 
 
 
